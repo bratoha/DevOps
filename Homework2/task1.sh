@@ -2,7 +2,7 @@
 
 number_of_workers="4"
 column_name="link"
-folder_path="3"
+folder_path="output"
 dataset_file="labelled_newscatcher_dataset.csv"
 
 while getopts ":n:w:d:o:" opt; do
@@ -34,8 +34,8 @@ fi
 
 column_number=$(head -1 labelled_newscatcher_dataset.csv | tr ';' '\n' | nl | grep -w "$column_name" | tr -d " " | awk -F " " '{print $1}')
 
-if ! [[ $column_number =~ '^[0-9]+$' ]]; then
-   echo "error: Column with name '$column_name' does not exists" 
+if [ -z $column_number ]; then
+   echo "error: Column with name '$column_name' does not exists in file $dataset_file" 
    exit 1
 fi
 
