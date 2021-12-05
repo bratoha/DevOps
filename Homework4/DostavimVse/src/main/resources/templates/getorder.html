@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Get Legs Test</title>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+
+    <script src="http://cdn.jsdelivr.net/webjars/jquery/1.9.1/jquery.min.js"
+            th:src="@{/webjars/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+<body>
+
+<div>
+    <button id="main-page">На главную</button>
+</div>
+
+<!--/*@thymesVar id="order" type="ru.fivt.dostavimvse.models.Order"*/-->
+<div class="order-info">
+    <p style="display: none;" id="order-id" th:text="${order.getId()}"></p>
+    <p style="display: none;" id="receiver-id" th:text="${order.getReceiver().getId()}"></p>
+    <div class="order_id">
+        Заказ <span th:text="${order.getId()}"></span>
+    </div>
+    <div class="order_start">
+        Создан: <span th:text="${order.getStartDate()}"></span>
+    </div>
+    <div class="order_start_vertex">
+        Начальная вершина: <span th:text="${order.getStartVertex()}"></span>
+    </div>
+
+    <div class="order_end_vertex">
+        Конечная вершина: <span th:text="${order.getEndVertex()}"></span>
+    </div>
+
+    <div class="order_status">
+        Статус заказа: <span th:text="${order.getOrderStatus().toString()}"></span>
+    </div>
+
+    <div class="order_receivcer">
+        Получатель: <span th:text="${order.getReceiver().getId()}"></span>
+    </div>
+
+    <div class="order_products">
+        Продукты:
+        <div th:each="product: ${order.getProducts()}">
+            <div class="product">
+                Вес: <span th:text="${product.getWeight()}"></span>
+                Цена: <span th:text="${product.getPrice()}"></span>
+            </div>
+        </div>
+
+        <div>
+            Данные о заказе
+            <div class="route">
+                <div class="route_leg">
+                    <div th:each="routeLeg: ${order.getRoute().getRouteLegs()}">
+                        Время начала: <span th:text="${routeLeg.getStartTime()}"></span>
+                        Время конца: <span th:text="${routeLeg.getEndTime()}"></span>
+                        Начало: <span th:text="${routeLeg.getLeg().getStartVertex()}"></span>
+                        Конец: <span th:text="${routeLeg.getLeg().getEndVertex()}"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+    <button th:if="${order.getReceiver().getId() == clientId and order.getOrderStatus().toString().equals('READY')}" id="receive-order-button">
+        Получить заказ!
+    </button>
+</div>
+
+<script>
+    function BrowserClient() {
+
+        BrowserClient.prototype.getMainPageButton = document.getElementById("main-page");
+        BrowserClient.prototype.receiveOrderButton = document.getElementById("receive-order-button");
+
+        BrowserClient.prototype.getMainPage = function () {
+            window.location = '/';
+        };
+        BrowserClient.prototype.receiveOrder = function () {
+            var receiverId = document.getElementById("receiver-id").innerText;
+            var orderId = document.getElementById("order-id").innerText;
+            var amp = "&amp;";
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/receive?receiverId=" + receiverId + amp[0] + "orderId=" + orderId,
+                dataType: "json"
+            }).done(function (data) {
+                if (data.code != 200) {
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                    location.reload();
+                }
+            });
+        }
+    }
+
+    var client = new BrowserClient();
+
+    client.getMainPageButton.onclick = function() {
+        client.getMainPage();
+    };
+    client.receiveOrderButton.onclick = function() {
+        client.receiveOrder();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+version: "3"
+services:
+  mysql:
+    hostname: devops-database
+    image: mysql:latest
+    container_name: mysql-container
+    ports:
+      - 3306:3306
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: devops
+      MYSQL_DATABASE: devops_db
+      MYSQL_USER: devops_user
+      MYSQL_PASSWORD: devops_password
+  app:
+    container_name: spring-boot-application
+    image: spring-boot
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+    environment:
+      - spring.datasource.driverClassName=com.mysql.jdbc.Driver
+      - spring.datasource.url=jdbc:mysql://devops-database:3306/devops_db?useSSL=false
+      - spring.datasource.username=devops_user
+      - spring.datasource.password=devops_password

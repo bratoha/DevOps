@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>DostavimVse</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+
+    <script src="http://cdn.jsdelivr.net/webjars/jquery/1.9.1/jquery.min.js"
+            th:src="@{/webjars/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+<body>
+
+Проект Доставим Все
+
+<p><button id="get-order-history">История заказов</button></p>
+
+<p><button id="create-order-button">Создать заказ</button></p>
+
+
+<div>
+    <label for="get-order-input">Поиск по id заказа</label>
+    <input type="text" id="get-order-input" placeholder="Введите номер заказа числом"/>
+    <button id="get-order-button">Найти</button>
+</div>
+
+
+<script>
+    function BrowserClient() {
+
+        BrowserClient.prototype.getOrderHistoryButton = document.getElementById("get-order-history");
+        BrowserClient.prototype.requestOrderButton = document.getElementById("create-order-button");
+        BrowserClient.prototype.gerOrderButton = document.getElementById("get-order-button");
+
+        BrowserClient.prototype.getOrderHistory = function () {
+            window.location = '/orders/1';
+        };
+
+        BrowserClient.prototype.requestOrder = function () {
+            window.location = '/create/1';
+        };
+
+        BrowserClient.prototype.getOrder = function() {
+            var value = Number(document.getElementById("get-order-input").value);
+            if (isNaN(value)) {
+                alert("Введите число!");
+                return;
+            }
+            window.location = '/order/' + value + '?clientId=1';
+        }
+    }
+
+    var client = new BrowserClient();
+    client.getOrderHistoryButton.onclick = function() {
+        client.getOrderHistory();
+    };
+    client.requestOrderButton.onclick = function() {
+        client.requestOrder();
+    };
+    client.gerOrderButton.onclick = function() {
+        client.getOrder();
+    };
+</script>
+</body>
+</html>

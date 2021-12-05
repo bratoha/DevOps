@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p th:text="'Hello !'" ></p>
+
+<!--/*@thymesVar id="client" type="ru.fivt.dostavimvse.models.Client"*/-->
+
+<div>
+    <button id="main-page">На главную</button>
+</div>
+
+
+<h1>История заказов</h1>
+
+<b>Отправленные заказы:</b>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <td>id</td>
+            <td>Дата отправки</td>
+            <td>Число продуктов</td>
+            <td>Общий вес</td>
+            <td>Общая стоимость</td>
+            <td>Статус заказа</td>
+        </tr>
+    </thead>
+    <th:block th:each="order : ${client.getOrders()}">
+        <tr>
+            <!--th:href="@{/orders/${order.getId()}}"-->
+            <td><a th:href="@{/order/{orderId}(orderId=${order.getId()}, clientId=${client.getId()})}" th:text="${order.getId()}"></a></td>
+            <td th:text="${order.getStartDate()}">Дата отправки</td>
+            <td th:text="${order.getProducts().size()}">Число продуктов</td>
+            <td th:text="${order.getOverallWeight()}">Общий вес</td>
+            <td th:text="${order.getOverallPrice()}">Общая стоимость</td>
+            <td th:text="${order.getOrderStatus()}">Статус заказа</td>
+        </tr>
+    </th:block>
+</table>
+
+<b>Получаемые заказы:</b>
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <td>id</td>
+        <td>Дата отправки</td>
+        <td>Число продуктов</td>
+        <td>Общий вес</td>
+        <td>Общая стоимость</td>
+        <td>Статус заказа</td>
+    </tr>
+    </thead>
+    <th:block th:each="order : ${client.getReceiverOrders()}">
+        <tr>
+            <!--th:href="@{/orders/${order.getId()}}"-->
+            <td><a th:href="@{/order/{orderId}(orderId=${order.getId()}, clientId=${client.getId()})}" th:text="${order.getId()}"></a></td>
+            <td th:text="${order.getStartDate()}">Дата отправки</td>
+            <td th:text="${order.getProducts().size()}">Число продуктов</td>
+            <td th:text="${order.getOverallWeight()}">Общий вес</td>
+            <td th:text="${order.getOverallPrice()}">Общая стоимость</td>
+            <td th:text="${order.getOrderStatus()}">Статус заказа</td>
+        </tr>
+    </th:block>
+</table>
+
+<script>
+    function BrowserClient() {
+
+        BrowserClient.prototype.getMainPageButton = document.getElementById("main-page");
+
+        BrowserClient.prototype.getMainPage = function () {
+            window.location = '/';
+        };
+    }
+
+    var client = new BrowserClient();
+
+    client.getMainPageButton.onclick = function() {
+        client.getMainPage();
+    };
+</script>
+
+</body>
+</html>

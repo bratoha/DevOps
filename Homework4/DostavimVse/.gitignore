@@ -1,4 +1,3 @@
-.DS_Store
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
@@ -23,10 +22,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-
-bin
-build
-lib
-
 
 src/main/java/ru/fivt/dostavimvse/Diagram.uml

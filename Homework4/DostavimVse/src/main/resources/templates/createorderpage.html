@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Get Legs Test</title>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.2.0/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/3.2.0/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+
+    <script src="http://cdn.jsdelivr.net/webjars/jquery/1.9.1/jquery.min.js"
+            th:src="@{/webjars/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+<body>
+
+
+<h1>Создать заказ</h1>
+<!--/*@thymesVar id="order" type="ru.fivt.dostavimvse.models.Order"*/-->
+<div class="order-info">
+    <p style="display: none;" id="clientid" th:text="${id}"></p>
+    <button id="main-page">На главную</button>
+
+    <div>
+        <label for="receiver-id">id получателя</label>
+        <input type="text" id="receiver-id"/>
+    </div>
+
+    <div>
+        <label for="start-vertex-id">Стартовая вершина</label>
+        <input type="text" id="start-vertex-id" />
+    </div>
+    <div>
+        <label for="end-vertex-id">Конечная вершина</label>
+        <input type="text" id="end-vertex-id" />
+    </div>
+
+
+    <div>
+        <select id="order-type">
+            <option th:each="orderType: ${orderTypes}" th:value="${orderType.toString()}" th:text="${orderType.toString()}">Test</option>
+        </select>
+    </div>
+
+    <div id="products-field">
+        <div class="product">
+            Вес
+            <input type="text" class="weight-input"/>
+            Цена
+            <input type="text" class="price-input"/>
+        </div>
+    </div>
+
+    <button id="add-product-button">
+        Добавить продукт
+    </button>
+
+    <button id="remove-product-button" style="display: none">
+        Удалить продукт
+    </button>
+
+    <button id="send-order">Отправить</button>
+</div>
+<script>
+    jQuery(document).ready(function($) {
+        var productsLength = 1;
+        function BrowserClient() {
+
+            BrowserClient.prototype.sendOrderButton = document.getElementById("send-order");
+            BrowserClient.prototype.mainPageButton = document.getElementById("main-page");
+
+            BrowserClient.prototype.addProductButton = document.getElementById("add-product-button");
+
+            BrowserClient.prototype.removeProductButton = document.getElementById("remove-product-button");
+
+            BrowserClient.prototype.getMainPage = function () {
+                window.location = '/';
+            };
+
+            BrowserClient.prototype.createOrder = function () {
+                var data = {};
+                data["orderType"] = document.getElementById("order-type").value;
+                data["startVertex"] = document.getElementById("start-vertex-id").value;
+                data["endVertex"] = document.getElementById("end-vertex-id").value;
+
+                data["products"] = [];
+
+                var flag = false;
+                $("#products-field").find(".product").each(function(index, element) {
+                    console.log($($(element).find(".price-input").first()).val());
+                    console.log($($(element).find(".weight-input").first()).val());
+                    var price = Number($($(element).find(".price-input").first()).val());
+                    var weight = Number($($(element).find(".weight-input").first()).val());
+                    if (isNaN(price) || isNaN(weight)) {
+                        flag = true;
+                    } else {
+                        data["products"].push({"weight": weight, "price": price});
+                    }
+                });
+                if (flag) {
+                    alert("Введите корректные данные о пользователе!");
+                    return;
+                }
+                var clientId = document.getElementById("clientid").innerText;
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/create/" + clientId + "?receiver=" + document.getElementById("receiver-id").value,
+                    data: JSON.stringify(data),
+                    dataType: "json"
+                }).done(function (data) {
+                    if (data.code != 200) {
+                        alert(data.message);
+                    } else {
+                        window.location = "/order/" + data.orderId[0] + "?clientId=" + clientId;
+                    }
+                });
+            };
+
+            BrowserClient.prototype.addProduct = function() {
+                $( "#products-field" ).append( '<div class="product"> Вес <input type="text" class="weight-input"/> Цена <input type="text" class="price-input"/></div>');
+                ++productsLength;
+                $("#remove-product-button").css("display", "block");
+            };
+
+            BrowserClient.prototype.removeProduct = function() {
+                if (productsLength >= 2) {
+                    $("#products-field").find(".product").last().remove();
+                    --productsLength;
+                }
+                if (productsLength == 1) {
+                    $("#remove-product-button").css("display", "none");
+                }
+
+            }
+        }
+
+        var client = new BrowserClient();
+        client.mainPageButton.onclick = function() {
+            client.getMainPage();
+        };
+        client.sendOrderButton.onclick = function() {
+            client.createOrder();
+        };
+
+        client.addProductButton.onclick = function() {
+            client.addProduct();
+        };
+
+        client.removeProductButton.onclick = function() {
+            client.removeProduct();
+        };
+    });
+
+</script>
+</body>
+</html>

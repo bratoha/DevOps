@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Get Legs Test</title>
+</head>
+<body>
+
+<!--/*@thymesVar id="order" type="ru.fivt.dostavimvse.models.Order"*/-->
+Ошибка! Заказа с таким номером не существует. Мы предлагаем Вам перейти на одну из следующих страниц:
+
+<button id="get-order-history">История заказов</button>
+<button id="main-page">На главную</button>
+
+<script>
+    function BrowserClient() {
+
+        BrowserClient.prototype.getOrderHistoryButton = document.getElementById("get-order-history");
+        BrowserClient.prototype.getMainPageButton = document.getElementById("main-page");
+
+        BrowserClient.prototype.getOrderHistory = function () {
+            window.location = '/orders/1';
+        };
+
+        BrowserClient.prototype.getMainPage = function () {
+            window.location = '/';
+        };
+    }
+
+    var client = new BrowserClient();
+    client.getOrderHistoryButton.onclick = function() {
+        client.getOrderHistory();
+    };
+    client.getMainPageButton.onclick = function() {
+        client.getMainPage();
+    };
+</script>
+</body>
+</html>
