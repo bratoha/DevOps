@@ -1,25 +1,25 @@
-version: "3"
+version: "2.1"
 services:
   db:
     hostname: db
-    image: mysql:5.6
     container_name: mysql-db
+    image: mysql:5.7
     ports:
       - 3306:3306
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
     environment:
-      MYSQL_DATABASE: dostavim
-      MYSQL_USER: user
-      MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: admin
-    healthcheck: # https://stackoverflow.com/questions/42567475/docker-compose-check-if-mysql-connection-is-ready
+      MYSQL_DATABASE: dostavim
+    healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
+    networks:
+      - backend
   app:
+    image: spring-boot-app-dostavimvse
     container_name: spring-boot-application
-    image: spring-boot
     build:
       context: .
     ports:
@@ -27,3 +27,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
