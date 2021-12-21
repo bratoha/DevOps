@@ -1,0 +1,39 @@
+name: CI Hometask
+
+on:
+  push:
+    branches: [ task5 ]
+  pull_request:
+    branches: [ task5 ]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build
+        run: |
+          cd task5
+          mkdir build
+          git submodule add https://github.com/google/googletest 3rdparty
+          cd build
+          cmake ..
+          make -j
+          cp -r B bin
+          cp -r C bin
+          cd B
+          ../C/C
+      - name: Test
+        uses: akhtyamovpavel/ActionGtestReport@v0.0.9
+        with:
+          exec-path: ../C/CTestExe
+          report-path: ./report/report.xml
+          working-directory: ./task5/build/B
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Distributive
+          path: |
+            ./task5/build/lib
+            ./task5/build/bin
